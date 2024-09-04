@@ -53,7 +53,8 @@ Vagrant.configure("2") do |config|
     master.vm.hostname = "controlplane"
     master.vm.network "private_network",  ip: master_ip
     master.vm.network "forwarded_port", guest: 30000, host: 30000, protocol: "tcp"
-
+    config.vm.network "forwarded_port", guest: 32000, host: 32000, protocol: "tcp"
+    
     # Allocate resources
     master.vm.provider "virtualbox" do |vb|
       vb.memory = MASTER_MEM
@@ -61,8 +62,6 @@ Vagrant.configure("2") do |config|
     end
     
     # Provisioning steps
-    # master.vm.provision "shell", path: "#{scripts_path}/common.sh"
-    # master.vm.provision "shell", path: "#{scripts_path}/master.sh"
     master.vm.provision "shell", path: "#{scripts_path}/install-kubernetes.sh"
     master.vm.provision "shell", path: "#{scripts_path}/kubeadm-init.sh"
     master.vm.provision "shell", path: "#{scripts_path}/install-tools.sh"
@@ -81,7 +80,6 @@ Vagrant.configure("2") do |config|
       end
       
       # Provisioning steps
-      # node.vm.provision "shell", path: "#{scripts_path}/common.sh"
       node.vm.provision "shell", path: "#{scripts_path}/install-kubernetes.sh"
       node.vm.provision "shell", path: "#{scripts_path}/join-node.sh"
     end
