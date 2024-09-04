@@ -38,17 +38,15 @@ This repository provides a complete setup to create a Kubernetes cluster for pra
    vagrant up
    ```
 
-4. **Access to Controlplane node**:
-   - SSH into the control plane node:
-     ```sh
-     vagrant ssh controlplane
-     ```
-5. **Verify the Cluster**:
-   - Use `kubectl` to ensure that the nodes are up and running:
-     ```sh
-     kubectl get nodes
-     kubectl get pods -A
-     ```
+4. **SSH into the control plane node**:
+   ```sh
+   vagrant ssh controlplane
+   ```
+5. **Use `kubectl` to ensure that the nodes are up and running**:
+   ```sh
+   kubectl get nodes
+   kubectl get pods -A
+   ```
 
 ## Contributing
 
