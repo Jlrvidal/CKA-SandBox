@@ -2,6 +2,7 @@
 
 # Kuernetes Variable Declaration
 KUBERNETES_VERSION="1.29.0-1.1"
+# Version to use can be found here https://github.com/kubernetes/kubernetes/releases
 
 # Path to the configuration file
 IP_CONFIG_FILE="/vagrant/ip_config.txt"
@@ -9,17 +10,18 @@ IP_CONFIG_FILE="/vagrant/ip_config.txt"
 # Read the IP addresses from the configuration file
 source $IP_CONFIG_FILE
 
-#Provides more accurate failure reporting for pipelines by making sure that the entire pipeline fails if any part of it fails.
+# Provides more accurate failure reporting for pipelines by making sure that the entire pipeline fails if any part of it fails.
 set -euxo pipefail
 
-# disable swap
+# Disable swap
 sudo swapoff -a
 
-# keeps the swaf off during reboot
+# Keeps the swaf off during reboot
 (crontab -l 2>/dev/null; echo "@reboot /sbin/swapoff -a") | crontab - || true
 sudo apt-get update -y
 
-source install-container-runtime.sh
+# Install the container runtime selected (default CRI-O)
+/vagrant/scripts/install-container-runtime.sh
 
 # Install kubelet, kubectl and Kubeadm
 
@@ -48,6 +50,7 @@ sudo apt-get install -y kubelet="$KUBERNETES_VERSION" kubectl="$KUBERNETES_VERSI
 sudo apt-get update -y
 sudo apt-mark hold kubelet kubeadm kubectl
 
+# Installing a command-line JSON processing tool, necessary for next steps
 sudo apt-get install -y jq
 
 # Function to find the IP matching the 192.168.56.x subnet

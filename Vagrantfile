@@ -52,8 +52,8 @@ Vagrant.configure("2") do |config|
   config.vm.define "controlplane" do |master|
     master.vm.hostname = "controlplane"
     master.vm.network "private_network",  ip: master_ip
-    # master.vm.network "forwarded_port", guest: 30000, host: 30000, protocol: "tcp"
-    # master.vm.network "forwarded_port", guest: 32000, host: 32000, protocol: "tcp"
+    master.vm.network "forwarded_port", guest: 30000, host: 30000, protocol: "tcp"
+    master.vm.network "forwarded_port", guest: 32000, host: 32000, protocol: "tcp"
     
     # Allocate resources
     master.vm.provider "virtualbox" do |vb|
