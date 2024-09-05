@@ -4,11 +4,8 @@
 KUBERNETES_VERSION="1.29.0-1.1"
 # Version to use can be found here https://github.com/kubernetes/kubernetes/releases
 
-# Path to the configuration file
-IP_CONFIG_FILE="/vagrant/ip_config.txt"
-
 # Read the IP addresses from the configuration file
-source $IP_CONFIG_FILE
+source /vagrant/ip_config.txt
 
 # Provides more accurate failure reporting for pipelines by making sure that the entire pipeline fails if any part of it fails.
 set -euxo pipefail
