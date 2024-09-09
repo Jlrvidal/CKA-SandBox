@@ -15,6 +15,8 @@ if [ -z "$CONTROL_PLANE_IP" ]; then
     exit 1
 fi
 
+sudo apt-get update -y
+
 # Pull required images
 sudo kubeadm config images pull
 

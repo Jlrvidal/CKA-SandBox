@@ -1,49 +1,31 @@
 #!/bin/bash
 
 # Kuernetes Variable Declaration
-KUBERNETES_VERSION="1.29.0-1.1"
+KUBERNETES_MAJOR_VERSION="1.30"
 # Version to use can be found here https://github.com/kubernetes/kubernetes/releases
 
 # Read the IP addresses from the configuration file
 source /vagrant/ip_config.txt
-
-# Provides more accurate failure reporting for pipelines by making sure that the entire pipeline fails if any part of it fails.
-set -euxo pipefail
-
-# Disable swap
-sudo swapoff -a
-
-# Keeps the swaf off during reboot
-(crontab -l 2>/dev/null; echo "@reboot /sbin/swapoff -a") | crontab - || true
-sudo apt-get update -y
-
-# Install the container runtime selected (default CRI-O)
-/vagrant/scripts/install-container-runtime.sh
 
 # Install kubelet, kubectl and Kubeadm
 
 sudo apt-get update -y
 sudo apt-get install -y apt-transport-https ca-certificates curl gpg
 
-# Extract the major and minor version
-MAJOR_MINOR_VERSION=$(echo "$KUBERNETES_VERSION" | awk -F'[.-]' '{print $1"."$2}')
-
-# Check if MAJOR_MINOR_VERSION is correctly extracted
-if [ -z "$MAJOR_MINOR_VERSION" ]; then
-    echo "Unable to extract major and minor version from KUBERNETES_VERSION."
-    exit 1
-fi
-
-echo "Using Kubernetes version: $KUBERNETES_VERSION"
-echo "Major.Minor version: $MAJOR_MINOR_VERSION"
-
 # Replace the version in the URLs and file names with the extracted major.minor version
 sudo mkdir -p -m 755 /etc/apt/keyrings
-curl -fsSL "https://pkgs.k8s.io/core:/stable:/v${MAJOR_MINOR_VERSION}/deb/Release.key" | sudo gpg --dearmor -o "/etc/apt/keyrings/kubernetes-${MAJOR_MINOR_VERSION}-apt-keyring.gpg"
-echo "deb [signed-by=/etc/apt/keyrings/kubernetes-${MAJOR_MINOR_VERSION}-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v${MAJOR_MINOR_VERSION}/deb/ /" | sudo tee "/etc/apt/sources.list.d/kubernetes-${MAJOR_MINOR_VERSION}.list"
+curl -fsSL "https://pkgs.k8s.io/core:/stable:/v${KUBERNETES_MAJOR_VERSION}/deb/Release.key" | sudo gpg --dearmor -o "/etc/apt/keyrings/kubernetes-${KUBERNETES_MAJOR_VERSION}-apt-keyring.gpg"
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-${KUBERNETES_MAJOR_VERSION}-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v${KUBERNETES_MAJOR_VERSION}/deb/ /" | sudo tee "/etc/apt/sources.list.d/kubernetes-${KUBERNETES_MAJOR_VERSION}.list"
 
+# Update the package list to include Kubernetes packages
 sudo apt-get update -y
-sudo apt-get install -y kubelet="$KUBERNETES_VERSION" kubectl="$KUBERNETES_VERSION" kubeadm="$KUBERNETES_VERSION"
+
+# Find the latest patch version for the specified major version using apt list
+LATEST_PATCH_VERSION=$(apt list -a kubeadm 2>/dev/null | grep "$KUBERNETES_MAJOR_VERSION" | head -n 1 | awk '{print $2}')
+
+echo "Using Kubernetes version: $LATEST_PATCH_VERSION"
+
+sudo apt-get install -y kubelet="$LATEST_PATCH_VERSION" kubectl="$LATEST_PATCH_VERSION" kubeadm="$LATEST_PATCH_VERSION"
 sudo apt-get update -y
 sudo apt-mark hold kubelet kubeadm kubectl
 

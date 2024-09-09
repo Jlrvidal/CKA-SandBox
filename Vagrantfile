@@ -7,8 +7,8 @@ MASTER_IP_START = 11
 NODE_IP_START = 20
 
 # Allocate Master nodes resources
-MASTER_MEM = "4096"
-MASTER_CPU = 4
+MASTER_MEM = "2048"
+MASTER_CPU = 2
 
 # Allocate Worker nodes resources
 WORKER_MEM = "2048"
@@ -62,6 +62,7 @@ Vagrant.configure("2") do |config|
     end
     
     # Provisioning steps
+    master.vm.provision "shell", path: "#{scripts_path}/install-container-runtime.sh"
     master.vm.provision "shell", path: "#{scripts_path}/install-kubernetes.sh"
     master.vm.provision "shell", path: "#{scripts_path}/kubeadm-init.sh"
     master.vm.provision "shell", path: "#{scripts_path}/install-tools.sh"
@@ -80,6 +81,7 @@ Vagrant.configure("2") do |config|
       end
       
       # Provisioning steps
+      node.vm.provision "shell", path: "#{scripts_path}/install-container-runtime.sh"
       node.vm.provision "shell", path: "#{scripts_path}/install-kubernetes.sh"
       node.vm.provision "shell", path: "#{scripts_path}/join-node.sh"
     end
